@@ -17,11 +17,11 @@ Project is a modern recreation of the classic Pacman arcade game. Navigate mazes
    ```
 2. Install dependencies  
    ```bash
-   npm install
+   pip install -r requirements.txt
    ```
 3. Start the game  
    ```bash
-   npm start
+   python code/pacman.py
    ```
 
 ## Usage
