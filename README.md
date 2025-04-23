@@ -1,4 +1,4 @@
-# 🟡 Pac-Man in Python (PyGame)
+# 🟡 Pacman
 
 ![Pac-Man Banner](https://upload.wikimedia.org/wikipedia/commons/5/59/Pacman.png)
 
