@@ -1,8 +1,8 @@
 # 🟡 Pacman
 
-![Pac-Man Banner](https://upload.wikimedia.org/wikipedia/commons/5/59/Pacman.png)
 
-A classic **Pac-Man** game built from scratch in Python using [PyGame](https://www.pygame.org/).
+![Pacman Banner](https://github.com/user-attachments/assets/75e9061c-34b1-4cb0-88ff-9beea76a00df)
+
 
 ---
 
@@ -14,15 +14,6 @@ A classic **Pac-Man** game built from scratch in Python using [PyGame](https://w
 - Score tracking and lives
 - Game over and victory screens
 - Retro visuals and smooth animations
-
----
-
-## 🖥️ Screenshots
-
-<p align="center">
-  <img src="assets/screenshots/gameplay.png" width="400" alt="Gameplay Screenshot"/>
-  <img src="assets/screenshots/gameover.png" width="400" alt="Game Over Screenshot"/>
-</p>
 
 ---
 
