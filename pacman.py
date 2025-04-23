@@ -196,9 +196,13 @@ while running:
     # Drawing
     screen.fill(BLACK)
 
-    # UI overlay (now shows pellets left)
-    ui = font.render(f"Score: {score}   Lives: {lives}   Pellets: {pellets_left}", True, WHITE)
-    screen.blit(ui, (10, 10))
+    # UI overlay with translucent background
+    ui_text = f"Score: {score}   Lives: {lives}   Pellets: {pellets_left}"
+    ui_surf = font.render(ui_text, True, WHITE)
+    bg_surf = pygame.Surface((ui_surf.get_width()+6, ui_surf.get_height()+4), pygame.SRCALPHA)
+    bg_surf.fill((0, 0, 0, 150))  # semi‑transparent black
+    screen.blit(bg_surf, (8, 8))
+    screen.blit(ui_surf, (10, 10))
 
     # Draw maze walls
     for i in range(MAZE_HEIGHT):
