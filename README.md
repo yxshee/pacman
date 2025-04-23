@@ -1,7 +1,7 @@
-# Project : Pacman
+# Pacman
 
 ## Overview
-Project L is a modern recreation of the classic Pacman arcade game. Navigate mazes, collect all pellets, and avoid ghosts to advance through increasingly challenging levels.
+Project is a modern recreation of the classic Pacman arcade game. Navigate mazes, collect all pellets, and avoid ghosts to advance through increasingly challenging levels.
 
 ## Features
 - Faithful Pacman gameplay

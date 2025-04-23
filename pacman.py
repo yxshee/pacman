@@ -1,8 +1,10 @@
 import pygame
 import random
+import math
 
 # Initialize Pygame
 pygame.init()
+pygame.font.init()
 
 # Constants
 CELL_SIZE = 20
@@ -53,6 +55,11 @@ pygame.display.set_caption("Pac-Man")
 
 # Clock for controlling frame rate
 clock = pygame.time.Clock()
+
+# Add score & lives
+score = 0
+lives = 3
+font = pygame.font.SysFont('arial', 18)
 
 # Pac-Man starting position and direction (placed in cell (1,1))
 pacman_x = 1 * CELL_SIZE + CELL_SIZE // 2
@@ -118,6 +125,7 @@ while running:
         # Eat pellet if available
         if pellets[grid_y][grid_x] == 1:
             pellets[grid_y][grid_x] = 0
+            score += 10
 
     # Move Ghost
     ghost_dx, ghost_dy = ghost_direction
@@ -140,13 +148,9 @@ while running:
 
     ghost_x, ghost_y = ghost_new_x, ghost_new_y
 
-    # Recalculate ghost grid cell and its center based on updated position
-    ghost_grid_x = int(ghost_x // CELL_SIZE)
-    ghost_grid_y = int(ghost_y // CELL_SIZE)
+    # Change ghost direction at cell center
     ghost_center_x = ghost_grid_x * CELL_SIZE + CELL_SIZE // 2
     ghost_center_y = ghost_grid_y * CELL_SIZE + CELL_SIZE // 2
-
-    # Change ghost direction at cell center
     if abs(ghost_x - ghost_center_x) < SPEED and abs(ghost_y - ghost_center_y) < SPEED:
         possible_directions = [
             d for d in [RIGHT, LEFT, UP, DOWN]
@@ -160,10 +164,30 @@ while running:
     # Check for collision between Pac-Man and Ghost
     if (int(pacman_x // CELL_SIZE) == int(ghost_x // CELL_SIZE) and
         int(pacman_y // CELL_SIZE) == int(ghost_y // CELL_SIZE)):
-        running = False  # Game over
+        lives -= 1
+        if lives > 0:
+            # Reset positions
+            pacman_x = 1 * CELL_SIZE + CELL_SIZE // 2
+            pacman_y = 1 * CELL_SIZE + CELL_SIZE // 2
+            direction = RIGHT
+            requested_direction = RIGHT
+            ghost_x = 7 * CELL_SIZE + CELL_SIZE // 2
+            ghost_y = 3 * CELL_SIZE + CELL_SIZE // 2
+            ghost_direction = DOWN
+        else:
+            # Final Game Over screen
+            game_over = font.render("GAME OVER", True, YELLOW)
+            screen.blit(game_over, (SCREEN_WIDTH//2 - 50, SCREEN_HEIGHT//2 - 10))
+            pygame.display.flip()
+            pygame.time.delay(2000)
+            running = False
 
     # Drawing
     screen.fill(BLACK)
+
+    # UI overlay
+    ui = font.render(f"Score: {score}   Lives: {lives}", True, WHITE)
+    screen.blit(ui, (10, 10))
 
     # Draw maze walls
     for i in range(MAZE_HEIGHT):
@@ -177,8 +201,14 @@ while running:
             if pellets[i][j] == 1:
                 pygame.draw.circle(screen, WHITE, (j * CELL_SIZE + CELL_SIZE // 2, i * CELL_SIZE + CELL_SIZE // 2), 2)
 
-    # Draw Pac-Man
-    pygame.draw.circle(screen, YELLOW, (int(pacman_x), int(pacman_y)), CELL_SIZE // 2 - 2)
+    # Draw Pac-Man with mouth animation
+    radius = CELL_SIZE//2 - 2
+    mouth_open = (pygame.time.get_ticks() // 200) % 2 == 0
+    rect = (int(pacman_x)-radius, int(pacman_y)-radius, radius*2, radius*2)
+    if mouth_open:
+        pygame.draw.arc(screen, YELLOW, rect, math.radians(30), math.radians(330), radius)
+    else:
+        pygame.draw.circle(screen, YELLOW, (int(pacman_x), int(pacman_y)), radius)
 
     # Draw Ghost
     pygame.draw.rect(screen, RED, (int(ghost_x - CELL_SIZE // 4), int(ghost_y - CELL_SIZE // 4), CELL_SIZE // 2, CELL_SIZE // 2))
