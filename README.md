@@ -1,7 +1,10 @@
 # 🟡 Pacman
 
 
-![Pacman Banner](https://github.com/user-attachments/assets/75e9061c-34b1-4cb0-88ff-9beea76a00df)
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/75e9061c-34b1-4cb0-88ff-9beea76a00df" width="80"/>
+</p>
 
 
 ---
@@ -79,7 +82,3 @@ pacman/
 This project is for educational purposes only. All rights to Pac-Man belong to their respective owners.
 
 ---
-
-<p align="center">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/5/59/Pacman.png" width="80"/>
-</p>
