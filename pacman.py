@@ -48,6 +48,7 @@ maze = [
 
 # Pellets (1 = pellet, 0 = no pellet)
 pellets = [[1 if maze[i][j] == 0 else 0 for j in range(MAZE_WIDTH)] for i in range(MAZE_HEIGHT)]
+pellets_left = sum(sum(row) for row in pellets)
 
 # Set up display
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -99,13 +100,17 @@ while running:
     grid_y = int(pacman_y // CELL_SIZE)
 
     # Check for wall collision for Pac-Man
-    if dx > 0 and new_x > (grid_x + 1) * CELL_SIZE and maze[grid_y][grid_x + 1] == 1:
-        new_x = (grid_x + 1) * CELL_SIZE
-    elif dx < 0 and new_x < grid_x * CELL_SIZE and maze[grid_y][grid_x - 1] == 1:
+    if dx > 0 and new_x > (grid_x + 1) * CELL_SIZE \
+       and grid_x + 1 < MAZE_WIDTH and maze[grid_y][grid_x + 1] == 1:
+        new_x = (grid_x + 1) * CELL_SIZE - 1
+    elif dx < 0 and new_x < grid_x * CELL_SIZE \
+       and grid_x - 1 >= 0 and maze[grid_y][grid_x - 1] == 1:
         new_x = grid_x * CELL_SIZE
-    if dy > 0 and new_y > (grid_y + 1) * CELL_SIZE and maze[grid_y + 1][grid_x] == 1:
-        new_y = (grid_y + 1) * CELL_SIZE
-    elif dy < 0 and new_y < grid_y * CELL_SIZE and maze[grid_y - 1][grid_x] == 1:
+    if dy > 0 and new_y > (grid_y + 1) * CELL_SIZE \
+       and grid_y + 1 < MAZE_HEIGHT and maze[grid_y + 1][grid_x] == 1:
+        new_y = (grid_y + 1) * CELL_SIZE - 1
+    elif dy < 0 and new_y < grid_y * CELL_SIZE \
+       and grid_y - 1 >= 0 and maze[grid_y - 1][grid_x] == 1:
         new_y = grid_y * CELL_SIZE
 
     pacman_x, pacman_y = new_x, new_y
@@ -122,10 +127,12 @@ while running:
             direction = requested_direction
             pacman_x, pacman_y = center_x, center_y
 
-        # Eat pellet if available
-        if pellets[grid_y][grid_x] == 1:
+        # Eat pellet if available (bounds‑checked)
+        if 0 <= grid_y < MAZE_HEIGHT and 0 <= grid_x < MAZE_WIDTH \
+           and pellets[grid_y][grid_x] == 1:
             pellets[grid_y][grid_x] = 0
             score += 10
+            pellets_left -= 1
 
     # Move Ghost
     ghost_dx, ghost_dy = ghost_direction
@@ -137,13 +144,17 @@ while running:
     ghost_grid_y = int(ghost_new_y // CELL_SIZE)
 
     # Check for wall collisions for Ghost
-    if ghost_dx > 0 and ghost_new_x > (ghost_grid_x + 1) * CELL_SIZE and maze[ghost_grid_y][ghost_grid_x + 1] == 1:
-        ghost_new_x = (ghost_grid_x + 1) * CELL_SIZE
-    elif ghost_dx < 0 and ghost_new_x < ghost_grid_x * CELL_SIZE and maze[ghost_grid_y][ghost_grid_x - 1] == 1:
+    if ghost_dx > 0 and ghost_new_x > (ghost_grid_x + 1) * CELL_SIZE \
+       and ghost_grid_x + 1 < MAZE_WIDTH and maze[ghost_grid_y][ghost_grid_x + 1] == 1:
+        ghost_new_x = (ghost_grid_x + 1) * CELL_SIZE - 1
+    elif ghost_dx < 0 and ghost_new_x < ghost_grid_x * CELL_SIZE \
+       and ghost_grid_x - 1 >= 0 and maze[ghost_grid_y][ghost_grid_x - 1] == 1:
         ghost_new_x = ghost_grid_x * CELL_SIZE
-    if ghost_dy > 0 and ghost_new_y > (ghost_grid_y + 1) * CELL_SIZE and maze[ghost_grid_y + 1][ghost_grid_x] == 1:
-        ghost_new_y = (ghost_grid_y + 1) * CELL_SIZE
-    elif ghost_dy < 0 and ghost_new_y < ghost_grid_y * CELL_SIZE and maze[ghost_grid_y - 1][ghost_grid_x] == 1:
+    if ghost_dy > 0 and ghost_new_y > (ghost_grid_y + 1) * CELL_SIZE \
+       and ghost_grid_y + 1 < MAZE_HEIGHT and maze[ghost_grid_y + 1][ghost_grid_x] == 1:
+        ghost_new_y = (ghost_grid_y + 1) * CELL_SIZE - 1
+    elif ghost_dy < 0 and ghost_new_y < ghost_grid_y * CELL_SIZE \
+       and ghost_grid_y - 1 >= 0 and maze[ghost_grid_y - 1][ghost_grid_x] == 1:
         ghost_new_y = ghost_grid_y * CELL_SIZE
 
     ghost_x, ghost_y = ghost_new_x, ghost_new_y
@@ -185,8 +196,8 @@ while running:
     # Drawing
     screen.fill(BLACK)
 
-    # UI overlay
-    ui = font.render(f"Score: {score}   Lives: {lives}", True, WHITE)
+    # UI overlay (now shows pellets left)
+    ui = font.render(f"Score: {score}   Lives: {lives}   Pellets: {pellets_left}", True, WHITE)
     screen.blit(ui, (10, 10))
 
     # Draw maze walls
@@ -210,8 +221,19 @@ while running:
     else:
         pygame.draw.circle(screen, YELLOW, (int(pacman_x), int(pacman_y)), radius)
 
-    # Draw Ghost
-    pygame.draw.rect(screen, RED, (int(ghost_x - CELL_SIZE // 4), int(ghost_y - CELL_SIZE // 4), CELL_SIZE // 2, CELL_SIZE // 2))
+    # Draw Ghost with circle body + eyes
+    radius = CELL_SIZE//2 - 2
+    gx, gy = int(ghost_x), int(ghost_y)
+    # head & body
+    pygame.draw.circle(screen, RED, (gx, gy), radius)
+    pygame.draw.rect(screen, RED, (gx - radius, gy, radius*2, radius))
+    # eyes
+    ex = radius // 2
+    ey = radius // 2
+    pygame.draw.circle(screen, WHITE, (gx - ex, gy - ey), radius//3)
+    pygame.draw.circle(screen, WHITE, (gx + ex, gy - ey), radius//3)
+    pygame.draw.circle(screen, BLUE,  (gx - ex, gy - ey), radius//6)
+    pygame.draw.circle(screen, BLUE,  (gx + ex, gy - ey), radius//6)
 
     pygame.display.flip()
 
