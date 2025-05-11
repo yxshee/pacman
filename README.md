@@ -7,7 +7,7 @@
 
 
 
-# 🟡 Pacman
+# 🟡 Pac-Man
 
 
 ## 🎮 Features
